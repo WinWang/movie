@@ -3,10 +3,7 @@ package com.winwang.movie.controller;
 
 import com.winwang.movie.common.Constant;
 import com.winwang.movie.common.MovieTypeEnum;
-import com.winwang.movie.pojo.BannerBean;
-import com.winwang.movie.pojo.MovieBean;
-import com.winwang.movie.pojo.PageVo;
-import com.winwang.movie.pojo.ResObject;
+import com.winwang.movie.pojo.*;
 import com.xuxueli.crawler.XxlCrawler;
 import com.xuxueli.crawler.loader.strategy.HtmlUnitPageLoader;
 import com.xuxueli.crawler.parser.PageParser;
@@ -14,10 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +42,66 @@ public class HomeController {
         return temp;
     }
 
+    @PostMapping("/detail")
+    public ResObject detailMovie(@RequestParam String path) {
+        ResObject detailRes = new ResObject();
+        XxlCrawler crawler = new XxlCrawler.Builder()
+                .setUrls(Constant.MOVIE_URL + path)
+                .setAllowSpread(false)
+                .setPageLoader(new HtmlUnitPageLoader())        // HtmlUnit 版本 PageLoader：支持 JS 渲染
+                .setPageParser(new PageParser<String>() {
+                    @Override
+                    public void parse(Document html, Element pageVoElement, String pageVo) {
+                        handleCommonDetail(html, detailRes);
+                    }
+                })
+                .build();
+        // 启动
+        crawler.start(true);
+        return detailRes;
+
+    }
+
+    /**
+     * 获取播放页详情ID
+     *
+     * @param html
+     * @param detailRes
+     */
+    private void handleCommonDetail(Document html, ResObject detailRes) {
+        PlayBean playBean = new PlayBean();
+        Element playList = html.getElementById("stab81");
+        Element vlink_1 = playList.getElementById("vlink_1");
+        Elements li = vlink_1.getElementsByTag("li");
+        if (li != null && li.size() > 0) {
+            List<PlayListBean> listBeans = new ArrayList<>();
+            for (Element element : li) {
+                Elements a = element.getElementsByTag("a");
+                String text = a.get(0).text();
+                String src = a.get(0).attr("href");
+                PlayListBean playListBean = PlayListBean.builder().playListUrl(src).playName(text).build();
+                listBeans.add(playListBean);
+            }
+            playBean.setPlayList(listBeans);
+        }
+
+        Elements playUrlList = html.getElementsByClass("panel panel-quality-1");
+        if (playUrlList != null && playUrlList.size() > 0) {
+            for (Element element : playUrlList) {
+                Elements playElement = element.getElementsByClass("col-lg-7 col-md-6 col-sm-6 col-xs-12 td-dl-links");
+                if (playElement != null && playElement.size() > 0) {
+                    for (Element ele : playElement) {
+                        Elements a = ele.getElementsByTag("a");
+                        String href_original = a.attr("href_original");
+                        playBean.setPlayUrl(href_original);
+                    }
+                }
+            }
+        }
+        detailRes.setResult(playBean);
+        ResObject.setSucecss(detailRes);
+    }
+
 
     private void handleDocument(Document document, ResObject resObject) {
         try {
@@ -61,7 +115,7 @@ public class HomeController {
                 String imgCover = imgElement.get(0).attr("src");
                 Elements bannerTitle = banner.getElementsByTag("h4");
                 String linkUrl = bannerTitle.attr("href");
-                System.out.println(">>>>>>>>>>>" + imgCover+">>>>>>"+bannerTitle.text());
+                System.out.println(">>>>>>>>>>>" + imgCover + ">>>>>>" + bannerTitle.text());
                 bannerList.add(new BannerBean(imgCover, bannerTitle.text(), linkUrl));
             }
             MovieBean movieBanner = new MovieBean();

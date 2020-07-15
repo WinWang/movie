@@ -18,5 +18,6 @@ public class MovieBean {
     private String coverUrl;
     private String movieName;
     private String linkUrl;
+    private String playUrl; //播放Url
 
 }
