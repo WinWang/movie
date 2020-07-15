@@ -21,8 +21,6 @@ import java.util.List;
 @Slf4j
 public class HomeController {
 
-    List<MovieBean> movieList = new ArrayList<>();
-
     @GetMapping("")
     public ResObject getMovieHome() {
         ResObject temp = new ResObject();
@@ -33,7 +31,8 @@ public class HomeController {
                 .setPageParser(new PageParser<PageVo>() {
                     @Override
                     public void parse(Document html, Element pageVoElement, PageVo pageVo) {
-                        handleDocument(html, temp);
+                        List<MovieBean> movieList = new ArrayList<>();
+                        handleDocument(movieList, html, temp);
                     }
                 })
                 .build();
@@ -66,7 +65,7 @@ public class HomeController {
      * 获取播放页详情ID
      *
      * @param html
-     * @param detailRes
+
      */
     private void handleCommonDetail(Document html, ResObject detailRes) {
         PlayBean playBean = new PlayBean();
@@ -103,7 +102,7 @@ public class HomeController {
     }
 
 
-    private void handleDocument(Document document, ResObject resObject) {
+    private void handleDocument(List<MovieBean> movieList, Document document, ResObject resObject) {
         try {
             //设置Banner
             Element hotBanner = document.getElementById("hot_1");
@@ -113,9 +112,8 @@ public class HomeController {
                 Elements coverElement = banner.getElementsByClass("list_mov_poster");
                 Elements imgElement = coverElement.get(0).getElementsByTag("img");
                 String imgCover = imgElement.get(0).attr("src");
-                Elements bannerTitle = banner.getElementsByTag("h4");
+                Elements bannerTitle = banner.getElementsByTag("a");
                 String linkUrl = bannerTitle.attr("href");
-                System.out.println(">>>>>>>>>>>" + imgCover + ">>>>>>" + bannerTitle.text());
                 bannerList.add(new BannerBean(imgCover, bannerTitle.text(), linkUrl));
             }
             MovieBean movieBanner = new MovieBean();
@@ -137,30 +135,26 @@ public class HomeController {
                 movieList.add(movieBean);
             }
             //最新电影
-            setHeadMovieTitle("最新电影");
-
+            setHeadMovieTitle("最新电影",movieList);
             Elements hotMovieElements = document.getElementsByClass("col-sm-12 col-md-12 col-lg-9 col-xlg-9 section-list sl2");
             Elements childrenElement = hotMovieElements.get(0).children();
             if (childrenElement != null) {
-                formatMovieData(childrenElement);
+                formatMovieData(childrenElement,movieList);
             }
-
             //最新电视剧
-            setHeadMovieTitle("最新电视剧");
-
+            setHeadMovieTitle("最新电视剧",movieList);
             Elements hotTVElements = document.getElementsByClass("col-sm-12 col-md-12 col-lg-9 col-xlg-9 section-list sl4");
             Elements childrenTVElement = hotTVElements.get(0).children();
-            formatMovieData(childrenTVElement);
-
-            setHeadMovieTitle("动漫综艺");
+            formatMovieData(childrenTVElement,movieList);
+            //最新动漫
+            setHeadMovieTitle("动漫综艺",movieList);
             Elements entertainmentAndCartoonElement = document.getElementsByClass("col-sm-12 col-md-12 col-lg-9 col-xlg-9 section-list sl8");
             Elements entertainmentEle = entertainmentAndCartoonElement.get(0).children();
-            formatMovieData(entertainmentEle);
-
-            setHeadMovieTitle("娱乐综艺");
+            formatMovieData(entertainmentEle,movieList);
+            //最新综艺
+            setHeadMovieTitle("娱乐综艺",movieList);
             Elements cartoonEle = entertainmentAndCartoonElement.get(1).children();
-            formatMovieData(cartoonEle);
-
+            formatMovieData(cartoonEle,movieList);
             resObject.setResult(movieList);
             ResObject.setSucecss(resObject);
         } catch (Exception e) {
@@ -169,7 +163,7 @@ public class HomeController {
 
     }
 
-    private void formatMovieData(Elements childrenTVElement) {
+    private void formatMovieData(Elements childrenTVElement, List<MovieBean> movieList) {
         for (Element element : childrenTVElement) {
             Elements coverElement = element.getElementsByClass("img-responsive");
             Elements imgElement = coverElement.get(0).getElementsByTag("img");
@@ -185,7 +179,7 @@ public class HomeController {
         }
     }
 
-    private void setHeadMovieTitle(String title) {
+    private void setHeadMovieTitle(String title, List<MovieBean> movieList) {
         MovieBean movieBean = new MovieBean();
         movieBean.setItemType(MovieTypeEnum.MOVIE_HEADER.getType());
         movieBean.setHeadTitle(title);
