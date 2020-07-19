@@ -1,23 +1,27 @@
 package com.winwang.movie.pojo;
 
-import com.xuxueli.crawler.annotation.PageFieldSelect;
-import com.xuxueli.crawler.conf.XxlCrawlerConf;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+
 @Data
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@Entity
+@Table(name = "banner")
 public class BannerBean {
-
-    @PageFieldSelect(cssQuery = ".img-responsive", selectType = XxlCrawlerConf.SelectType.HTML)
+    @Id
+    @GeneratedValue()
+    private Integer id;
+    @Column(nullable = false, length = 200)
     private String coverUrl;
-
+    @Column(nullable = false, length = 50)
     private String movieName;
-
+    @Column(nullable = false, length = 200)
     private String linkUrl;
 
 }
