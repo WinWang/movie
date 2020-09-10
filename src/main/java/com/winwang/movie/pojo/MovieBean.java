@@ -22,15 +22,15 @@ public class MovieBean {
     private Integer itemType;//Recycleview类型type
     @Embedded
     private List<BannerBean> bannerList;
-    @Column(nullable = false,length = 50)
+    @Column(nullable = true,length = 50)
     private String headTitle; //头布局的title,
-    @Column(nullable = false,length = 200)
+    @Column(nullable = true,length = 200)
     private String coverUrl;
-    @Column(nullable = false,length = 20)
+    @Column(nullable = true,length = 20)
     private String movieName;
-    @Column(nullable = false,length = 200)
+    @Column(nullable = true,length = 200)
     private String linkUrl;
-    @Column(nullable = false,length = 200)
+    @Column(nullable = true,length = 200)
     private String playUrl; //播放Url
 
 }

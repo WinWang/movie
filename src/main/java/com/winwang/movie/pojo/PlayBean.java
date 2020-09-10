@@ -17,9 +17,9 @@ import java.util.List;
 public class PlayBean {
     @Id
     private String id;
-    @Column(nullable = false, length = 100)
+    @Column(nullable = true, length = 100)
     private String playUrl;
-//    @Embedded
+    //    @Embedded
 //    private List<PlayListBean> playList; //用户可选播放-暂时弃用
     @Embedded
     private List<PlayListBean> urlList;  //多级播放-实际使用

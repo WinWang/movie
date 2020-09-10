@@ -2,11 +2,13 @@ package com.winwang.movie.service;
 
 import com.winwang.movie.common.Constant;
 import com.winwang.movie.common.MovieTypeEnum;
+import com.winwang.movie.crawler.MyHtmlUnitLoader;
 import com.winwang.movie.pojo.*;
 import com.winwang.movie.respository.*;
 import com.xuxueli.crawler.XxlCrawler;
 import com.xuxueli.crawler.loader.strategy.HtmlUnitPageLoader;
 import com.xuxueli.crawler.parser.PageParser;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-
+@Slf4j
 public class HomeService implements BaseService {
 
     @Autowired
@@ -96,11 +98,13 @@ public class HomeService implements BaseService {
      * @return
      */
     public ResObject getVideoDetail(String path) {
+        String s = Constant.MOVIE_URL + path;
+        log.debug(s);
         ResObject detailRes = new ResObject();
         XxlCrawler crawler = new XxlCrawler.Builder()
                 .setUrls(Constant.MOVIE_URL + path)
                 .setAllowSpread(false)
-                .setPageLoader(new HtmlUnitPageLoader())        // HtmlUnit 版本 PageLoader：支持 JS 渲染
+                .setPageLoader(new MyHtmlUnitLoader())        // HtmlUnit 版本 PageLoader：支持 JS 渲染
                 .setPageParser(new PageParser<String>() {
                     @Override
                     public void parse(Document html, Element pageVoElement, String pageVo) {
@@ -165,6 +169,9 @@ public class HomeService implements BaseService {
                 bannerBean.setMovieName(bannerTitle.text());
                 bannerList.add(bannerBean);
             }
+            if (bannerList != null && bannerList.size() > 0) {
+                bannerRepository.deleteAll();
+            }
             bannerRepository.saveAll(bannerList);
             MovieBean movieBanner = new MovieBean();
             movieBanner.setItemType(MovieTypeEnum.MOVIE_BANNER.getType());
@@ -206,6 +213,7 @@ public class HomeService implements BaseService {
             Elements cartoonEle = entertainmentAndCartoonElement.get(1).children();
             formatMovieData(cartoonEle, movieList);
             resObject.setResult(movieList);
+            homeRepository.deleteAll();
             homeRepository.saveAll(movieList);
             ResObject.setSucecss(resObject);
         } catch (Exception e) {
