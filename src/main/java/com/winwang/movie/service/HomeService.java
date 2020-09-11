@@ -227,6 +227,9 @@ public class HomeService implements BaseService {
             Elements coverElement = element.getElementsByClass("img-responsive");
             Elements imgElement = coverElement.get(0).getElementsByTag("img");
             String imgCover = imgElement.get(0).attr("src");
+            if (!imgCover.startsWith("http")) {
+                imgCover = Constant.MOVIE_URL + imgCover;
+            }
             Elements titleH4 = element.getElementsByTag("h4");
             String linkUrl = titleH4.get(0).getElementsByTag("a").attr("href");
             MovieBean movieBean = new MovieBean();
