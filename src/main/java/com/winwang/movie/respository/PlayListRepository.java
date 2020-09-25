@@ -12,6 +12,6 @@ import java.util.List;
 public interface PlayListRepository extends JpaRepository<PlayListBean, String> {
 
     @Query(value = "select * from playlist_table  where video_paht = :path", nativeQuery = true)
-    public List<PlayListBean> findPlayListBeanByVideoPaht(@Param("path") String path);
+    List<PlayListBean> findPlayListBeanByVideoPaht(@Param("path") String path);
 
 }
