@@ -1,4 +1,4 @@
-package com.winwang.movie.pojo;
+package com.winwang.movie.pojo.base;
 
 
 import com.winwang.movie.common.Constant;

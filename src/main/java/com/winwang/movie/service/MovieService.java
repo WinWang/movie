@@ -4,6 +4,11 @@ import com.winwang.movie.common.Constant;
 import com.winwang.movie.common.MovieTypeEnum;
 import com.winwang.movie.crawler.MyHtmlUnitLoader;
 import com.winwang.movie.pojo.*;
+import com.winwang.movie.pojo.base.ResObject;
+import com.winwang.movie.pojo.movie.BannerBean;
+import com.winwang.movie.pojo.movie.MovieBean;
+import com.winwang.movie.pojo.movie.PlayBean;
+import com.winwang.movie.pojo.movie.PlayListBean;
 import com.winwang.movie.respository.*;
 import com.xuxueli.crawler.XxlCrawler;
 import com.xuxueli.crawler.loader.strategy.HtmlUnitPageLoader;
@@ -21,7 +26,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class HomeService implements BaseService {
+public class MovieService implements BaseService {
 
     @Autowired
     private UserRepository userRepository;

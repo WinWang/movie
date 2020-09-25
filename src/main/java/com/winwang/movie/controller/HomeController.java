@@ -1,11 +1,11 @@
 package com.winwang.movie.controller;
 
 
-import com.winwang.movie.pojo.MovieBean;
-import com.winwang.movie.pojo.PlayBean;
-import com.winwang.movie.pojo.ResObject;
+import com.winwang.movie.pojo.movie.MovieBean;
+import com.winwang.movie.pojo.movie.PlayBean;
+import com.winwang.movie.pojo.base.ResObject;
 import com.winwang.movie.pojo.Test;
-import com.winwang.movie.service.HomeService;
+import com.winwang.movie.service.MovieService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ import java.util.List;
 public class HomeController {
 
     @Autowired
-    HomeService homeService;
+    MovieService movieService;
 
     /**
      * 获取首页数据接口（首页电影）
@@ -27,13 +27,13 @@ public class HomeController {
      */
     @GetMapping("")
     public ResObject getMovieHome() {
-        List<MovieBean> homeDataByDB = homeService.getHomeDataByDB();
+        List<MovieBean> homeDataByDB = movieService.getHomeDataByDB();
         if (homeDataByDB != null && homeDataByDB.size() > 0) {
             ResObject<Object> res = ResObject.successResult();
             res.setResult(homeDataByDB);
             return res;
         } else {
-            return homeService.getHomeData();
+            return movieService.getHomeData();
         }
     }
 
@@ -45,20 +45,20 @@ public class HomeController {
      */
     @PostMapping("/detail")
     public ResObject detailMovie(@RequestParam String path) {
-        PlayBean videoDetailByDB = homeService.getVideoDetailByDB(path);
+        PlayBean videoDetailByDB = movieService.getVideoDetailByDB(path);
         if (videoDetailByDB != null) {
             ResObject<Object> resObject = ResObject.successResult();
             resObject.setResult(videoDetailByDB);
             return resObject;
         } else {
-            return homeService.getVideoDetail(path);
+            return movieService.getVideoDetail(path);
         }
     }
 
 
     @GetMapping("/test")
     public List<Test> tests() {
-        return homeService.test();
+        return movieService.test();
     }
 
 

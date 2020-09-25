@@ -1,6 +1,6 @@
 package com.winwang.movie.respository;
 
-import com.winwang.movie.pojo.PlayListBean;
+import com.winwang.movie.pojo.movie.PlayListBean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

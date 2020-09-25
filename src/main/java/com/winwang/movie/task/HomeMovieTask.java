@@ -1,7 +1,7 @@
 package com.winwang.movie.task;
 
 
-import com.winwang.movie.service.HomeService;
+import com.winwang.movie.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -14,12 +14,12 @@ public class HomeMovieTask {
 
 
     @Autowired
-    HomeService homeService;
+    MovieService movieService;
 
     @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
 //    @Scheduled(fixedDelay = 1000 * 60)
     private void fetchHomeMovieList() {
 
-        homeService.getHomeData();
+        movieService.getHomeData();
     }
 }
