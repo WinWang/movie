@@ -1,4 +1,4 @@
-package com.winwang.movie.pojo;
+package com.winwang.movie.pojo.movie;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
