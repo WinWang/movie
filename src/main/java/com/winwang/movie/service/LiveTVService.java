@@ -68,19 +68,46 @@ public class LiveTVService implements BaseService {
         } else {
             Elements iframe = document.getElementsByTag("iframe");
             if (iframe != null && iframe.size() > 0) {
-                for (Element element : iframe) {
-                    String src = element.attr("src");
-                    if (src.contains(".m3u8")) {
-                        String[] split = src.split("&url=");
-                        if (split != null && split.length >= 2) {
-                            temp.setResult(split[1]);
-                            break;
-                        }
+                String src = iframe.get(0).attr("src");
+                temp = crawlerTwice(src, temp);
+            }
+        }
+        ResObject.setSucecss(temp);
+    }
+
+    private ResObject crawlerTwice(String src, ResObject temp) {
+        src = src.startsWith("http") ? src : "http:" + src;
+        XxlCrawler crawler = new XxlCrawler.Builder()
+                .setUrls(src)
+                .setAllowSpread(false)
+                .setPageLoader(new MyHtmlUnitLoader())         // HtmlUnit 版本 PageLoader：支持 JS 渲染
+                .setPageParser(new PageParser<String>() {
+                    @Override
+                    public void parse(Document html, Element pageVoElement, String pageVo) {
+                        String s = handleTwiceCrawler(html);
+                        temp.setResult(s);
+                    }
+                })
+                .build();
+        // 启动
+        crawler.start(true);
+        return temp;
+    }
+
+    private String handleTwiceCrawler(Document document) {
+        Elements iframe = document.getElementsByTag("iframe");
+        if (iframe != null && iframe.size() > 0) {
+            for (Element element : iframe) {
+                String src = element.attr("src");
+                if (src.contains(".m3u8")) {
+                    String[] split = src.split("&url=");
+                    if (split != null && split.length >= 2) {
+                        return split[1];
                     }
                 }
             }
         }
-        ResObject.setSucecss(temp);
+        return "";
     }
 
 
